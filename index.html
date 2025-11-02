@@ -1,75 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <style>
-    body{
+    body {
         height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
     }
-    .container{
+
+    .container {
         border: 1px solid black;
         border-radius: 6px;
         width: 500px;
         height: 400px;
         position: relative;
     }
-    .ball{
+
+    .ball {
         border-radius: 50%;
-        background-color: red;
         width: 50px;
         height: 50px;
         border: 2px solid black;
     }
 </style>
+
 <body>
     <div class="entrada">
         <input type="range" min="0" max="3" step="0.1" value="0.2" class="velocidad">
     </div>
     <div class="container"></div>
     <script>
-        let positionX=0;
-        let positionY= randomY();
-        let ballEl;
+        const ballsData = [];
+        const numBalls = 5;
         const containerEl = document.querySelector('.container');
         const velocidadEl = document.querySelector('.velocidad');
-        function randomY(){
-            let posY= Math.round(Math.random()*400);            
-            if(posY<25) posY=25;
-            if(posY>340) posY= 340;
+        const color = [
+            'red',
+            'blue',
+            'green',
+            'yellow',
+            'purple',
+            'orange',
+            'pink',
+            'brown',
+            'gray',
+            'black'
+        ]
+        function randomY() {
+            let posY = Math.round(Math.random() * 400);
+            if (posY < 25) posY = 25;
+            if (posY > 340) posY = 340;
             return posY
         }
-        function ball(){
-            ballEl= document.createElement('div');
-            ballEl.className='ball';
-            ballEl.style.cssText= `
+        function createBall() {
+            let ballEl = document.createElement('div');
+            ballEl.className = 'ball';
+            const ball ={
+                el: ballEl,
+                x: Math.random()*450,
+                y: randomY(),
+                vy: Math.random(),
+            };
+            ballEl.style.cssText = `
             position: absolute;
-            left: ${positionX}px;
-            top: ${positionY}px;
+            left: ${ball.x}px;
+            top: ${ball.y}px;
+            background-color: ${color[Math.floor(Math.random()*color.length)]};
             `;
             containerEl.appendChild(ballEl);
+            ballsData.push(ball);
         };
-        ball();
-        function moveBall(){
-            positionX+=parseFloat(velocidadEl.value);
-            if(positionX>450) {
-                positionX=0;
-                positionY= randomY();
-            }
-            ballEl.style.left= `${positionX}px`;
-            ballEl.style.top = `${positionY}px`;
+        for (let i =0; i< numBalls; i++){
+            createBall();
         };
-        function animation(){
+        function moveBall() {
+            for (const ball of ballsData){
+                ball.x+= parseFloat(velocidadEl.value)*(ball.vy+1);
+                if (ball.x > 450) {
+                    ball.x = 0;
+                    ball.y = randomY();
+                };
+                ball.el.style.left = `${ball.x}px`;
+                ball.el.style.top = `${ball.y}px`;
+            };
+        };
+        function animation() {
             moveBall();
             requestAnimationFrame(animation);
         };
         animation();
     </script>
 </body>
+
 </html>
